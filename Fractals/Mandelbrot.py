@@ -1,5 +1,6 @@
 import pygame
 import sys
+from numba import jit
 
 XX = 1200
 YY = 900
@@ -21,37 +22,50 @@ dy = 3
 rechnen = True
 surfArray = pygame.surfarray.pixels3d(screen)
 
+@jit
+def drawMandelbrotSet(x1,y1,dx,dy,XX,YY,surfArray):
+    sx = dx / XX
+    sy = dy / YY
+    x = x1
+    xpos = 0
+    while xpos < XX:
+        y = y1
+        ypos = 0
+        while ypos < YY:
+            i = mandelbrot(x, y)
+            if i == 100:
+                color = [0, 0, 0]
+            else:
+                r = (10 * i) % 255
+                g = (13 * i) % 255
+                b = (16 * i) % 255
+                color = [r, g, b]
+
+            surfArray[xpos][ypos] = color
+            y += sy
+            ypos += 1
+
+        pygame.display.flip()
+        x += sx
+        xpos += 1
+
+
+@jit
+def mandelbrot(x, y):
+    z = complex(0, 0)
+    c = complex(x, y)
+    i = 0
+    while i < 100:
+        z = z * z + c
+        if z.real * z.real + z.imag * z.imag > 4:
+            break
+        i += 1
+    return i
+
+
 while True:
     if rechnen:
-        sx = dx / XX
-        sy = dy / YY
-        x = x1
-        xpos = 0
-        while xpos < XX:
-            y = y1
-            ypos = 0
-            while ypos < YY:
-                z = complex(0, 0)
-                c = complex(x, y)
-                for i in range(100):
-                    z = z * z + c
-                    if z.real * z.real + z.imag * z.imag > 4:
-                        break
-                if abs(z) < 2:
-                    color = [0, 0, 0]
-                else:
-                    r = (10 * i) % 255
-                    g = (13 * i) % 255
-                    b = (16 * i) % 255
-                    color = [r, g, b]
-
-                surfArray[xpos][ypos] = color
-                y += sy
-                ypos += 1
-
-            pygame.display.flip()
-            x += sx
-            xpos += 1
+        drawMandelbrotSet(x1,y1,dx,dy,XX,YY,surfArray)
         rechnen = False
 
     for event in pygame.event.get():
