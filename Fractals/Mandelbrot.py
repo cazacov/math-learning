@@ -1,15 +1,15 @@
 import pygame
 import sys
 
-XX=1200
-YY=900
+XX = 1200
+YY = 900
 
 pygame.init()
 screen = pygame.display.set_mode([XX, YY])
 screen.fill([0, 0, 0])
 
-pygame.draw.line(screen, [255, 255, 255], [0, YY/2], [XX, YY/2],3)
-pygame.draw.line(screen, [255, 255, 255], [XX/2, 0], [XX/2, YY],3)
+pygame.draw.line(screen, [255, 255, 255], [0, YY / 2], [XX, YY / 2], 3)
+pygame.draw.line(screen, [255, 255, 255], [XX / 2, 0], [XX / 2, YY], 3)
 
 pygame.display.flip()
 
@@ -29,7 +29,7 @@ while True:
             y = y1
             ypos = 0
             while ypos < YY:
-                z = complex(0,0)
+                z = complex(0, 0)
                 c = complex(x, y)
                 for i in range(100):
                     z = z * z + c
@@ -44,14 +44,13 @@ while True:
                     color = [r, g, b]
 
                 screen.set_at((xpos, ypos), color)
+                y += sy
+                ypos += 1
 
-                y = y + sy
-                ypos = ypos + 1
             pygame.display.flip()
-            x = x + sx
-            xpos = xpos + 1
+            x += sx
+            xpos += 1
         rechnen = False
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -59,10 +58,10 @@ while True:
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 pos = pygame.mouse.get_pos()
-                alpha = float(pos[0])/ XX
-                betha = float(pos[1])/ YY
+                alpha = float(pos[0]) / XX
+                beta = float(pos[1]) / YY
                 mx = x1 + alpha * dx
-                my = y1 + betha * dy
+                my = y1 + beta * dy
                 x1 = mx - dx / 10
                 y1 = my - dy / 10
                 dx /= 5.0
