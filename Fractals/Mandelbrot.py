@@ -6,6 +6,7 @@ YY = 900
 
 pygame.init()
 screen = pygame.display.set_mode([XX, YY])
+screen.set_alpha(None)
 screen.fill([0, 0, 0])
 
 pygame.draw.line(screen, [255, 255, 255], [0, YY / 2], [XX, YY / 2], 3)
@@ -18,6 +19,7 @@ y1 = -1.5
 dx = 4
 dy = 3
 rechnen = True
+surfArray = pygame.surfarray.pixels3d(screen)
 
 while True:
     if rechnen:
@@ -33,7 +35,7 @@ while True:
                 c = complex(x, y)
                 for i in range(100):
                     z = z * z + c
-                    if abs(z) > 2:
+                    if z.real * z.real + z.imag * z.imag > 4:
                         break
                 if abs(z) < 2:
                     color = [0, 0, 0]
@@ -43,7 +45,7 @@ while True:
                     b = (16 * i) % 255
                     color = [r, g, b]
 
-                screen.set_at((xpos, ypos), color)
+                surfArray[xpos][ypos] = color
                 y += sy
                 ypos += 1
 
