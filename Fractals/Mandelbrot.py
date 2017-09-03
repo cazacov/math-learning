@@ -2,8 +2,9 @@ import pygame
 import sys
 from numba import jit
 
-XX = 1200
-YY = 900
+XX = 1800       # Screen size X
+YY = 900        # Screen size Y
+MAXDEPTH = 160  # Maximum iteration count
 
 pygame.init()
 screen = pygame.display.set_mode([XX, YY])
@@ -15,15 +16,16 @@ pygame.draw.line(screen, [255, 255, 255], [XX / 2, 0], [XX / 2, YY], 3)
 
 pygame.display.flip()
 
-x1 = -2
-y1 = -1.5
-dx = 4
-dy = 3
+x1 = -2     # Initial view top left
+y1 = -1
+dx = 4      # Initial view size
+dy = 2
 rechnen = True
 surfArray = pygame.surfarray.pixels3d(screen)
 
+
 @jit
-def drawMandelbrotSet(x1,y1,dx,dy,XX,YY,surfArray):
+def drawMandelbrotSet(x1, y1, dx, dy, XX, YY, surfArray):
     sx = dx / XX
     sy = dy / YY
     x = x1
@@ -33,39 +35,43 @@ def drawMandelbrotSet(x1,y1,dx,dy,XX,YY,surfArray):
         ypos = 0
         while ypos < YY:
             i = mandelbrot(x, y)
-            if i == 100:
+            if i == MAXDEPTH:
                 color = [0, 0, 0]
             else:
-                r = (10 * i) % 255
-                g = (13 * i) % 255
-                b = (16 * i) % 255
+                r = (5 * i) % 255
+                g = (7 * i) % 255
+                b = (11 * i) % 255
                 color = [r, g, b]
 
             surfArray[xpos][ypos] = color
             y += sy
             ypos += 1
-
-        pygame.display.flip()
         x += sx
         xpos += 1
+        if xpos % 10 == 0:
+            pygame.display.flip()
 
 
 @jit
 def mandelbrot(x, y):
-    z = complex(0, 0)
-    c = complex(x, y)
     i = 0
-    while i < 100:
-        z = z * z + c
-        if z.real * z.real + z.imag * z.imag > 4:
+    re = x
+    im = y
+    while i < MAXDEPTH:
+        re2 = re * re
+        im2 = im * im
+        if re2 + im2 > 4:
             break
+
+        im = 2 * re * im + y
+        re = re2 - im2 + x
         i += 1
     return i
 
 
 while True:
     if rechnen:
-        drawMandelbrotSet(x1,y1,dx,dy,XX,YY,surfArray)
+        drawMandelbrotSet(x1, y1, dx, dy, XX, YY, surfArray)
         rechnen = False
 
     for event in pygame.event.get():
